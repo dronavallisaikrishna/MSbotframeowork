@@ -43,7 +43,7 @@ bot.dialog('/', function (session) {
               }
               else {
                   console.log("response is:-"+body)
-                  session.send("response is:-"+body);
+                  session.send("response is:-"+JSON.parse(body));
               }
           });
 
