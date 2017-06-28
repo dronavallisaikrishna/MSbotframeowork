@@ -1,5 +1,6 @@
 var restify = require('restify');
 var builder = require('botbuilder');
+var querystring = require('querystring');
 var request=require('request');
 
 // Get secrets from server environment
@@ -13,8 +14,41 @@ var connector = new builder.ChatConnector(botConnectorOptions);
 var bot = new builder.UniversalBot(connector);
 
 bot.dialog('/', function (session) {
+
+    var form={
+        client_id:"c94ce145-d0dd-49f7-bd94-b04af30b4303",
+        grant_type:"client_credentials",
+        client_secret:"xEl06f0hSTU17S7j56nWnnQahZ0dYyZL0BlGu1xbUyo=",
+        resource:"https://management.azure.com/"
+    }
+    var formData = querystring.stringify(form);
+    var contentLength = formData.length;
+          var query = {"flight-uxoptin":"true","stsservicecookie":"ests", "x-ms-gateway-slice":"productionb","stsservicecookie":"ests"}
+          request({
+              url: 'https://login.microsoftonline.com/652feb91-6d92-4f6c-ad98-d2daec6bdae7/oauth2/token',
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                  'Cookie':JSON.stringify(query),
+                  'Content-Length': contentLength,
+              },
+              //body: '{\"title\": \"' + data + '\"}' //Set the body as a string
+              body: formData //Set the body as a string
+
+          }, function(error, response, body){
+              if(error) {
+                  console.log("response is error and is:-"+error);
+                  //resp.send("response is error and is:-"+error);
+                  session.send("response is error and is:-"+error);
+              }
+              else {
+                  console.log("response is:-"+body)
+                  session.send("response is:-"+body);
+              }
+          });
+
     //respond with user's message
-    var query = {"properties": {"templateLink": {"uri": "https://irastorageaccount.blob.core.windows.net/templates/template.json","contentVersion": "1.0.0.0"},"mode":"Incremental"}}
+    /*var query = {"properties": {"templateLink": {"uri": "https://irastorageaccount.blob.core.windows.net/templates/template.json","contentVersion": "1.0.0.0"},"mode":"Incremental"}}
           request({
               url: 'https://management.azure.com/subscriptions/b9cec7a1-c948-4cd3-a08e-aac87ab0de4a/resourcegroups/botwordpress/providers/Microsoft.Resources/deployments/wordpress?api-version=2015-01-01',
               method: 'PUT',
@@ -34,7 +68,8 @@ bot.dialog('/', function (session) {
                   console.log("response is:-"+body)
                   session.send("response is:-"+body);
               }
-          });
+          });*/
+
 });
 
 // Setup Restify Server
