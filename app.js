@@ -39,12 +39,33 @@ bot.dialog('/', function (session) {
               if(error) {
                   console.log("response is error and is:-"+error);
                   //resp.send("response is error and is:-"+error);
-                  session.send("response is error and is:-"+error);
+                  session.send("error is generating api key:-"+error);
               }
               else {
                   console.log("response is:-"+body)
                   var obj=JSON.parse(body);
-                  session.send("response is:-"+obj.access_token);
+                  var query = {"properties": {"templateLink": {"uri": "https://irastorageaccount.blob.core.windows.net/templates/template.json","contentVersion": "1.0.0.0"},"mode":"Incremental"}}
+                  request({
+                      url: 'https://management.azure.com/subscriptions/b9cec7a1-c948-4cd3-a08e-aac87ab0de4a/resourcegroups/botwordpress/providers/Microsoft.Resources/deployments/wordpress?api-version=2015-01-01',
+                      method: 'PUT',
+                      headers: {
+                          'Content-Type': 'application/json',
+                          'Authorization':'Bearer '+ obj.access_token
+                      },
+                      //body: '{\"title\": \"' + data + '\"}' //Set the body as a string
+                      body: JSON.stringify(query) //Set the body as a string
+
+                  }, function(error, response, body){
+                      if(error) {
+                          console.log("response is error and is:-"+error);
+                          session.send("response is error and is:-"+error);
+                      }
+                      else {
+                          console.log("response is:-"+body)
+                          session.send("response is:-"+body);
+                      }
+                  });
+                  //session.send("response is:-"+obj.access_token);
               }
           });
 
