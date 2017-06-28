@@ -16,7 +16,7 @@ bot.dialog('/', function (session) {
     //respond with user's message
     var query = {"properties": {"templateLink": {"uri": "https://irastorageaccount.blob.core.windows.net/templates/template.json","contentVersion": "1.0.0.0"},"mode":"Incremental"}}
           request({
-              url: 'https://management.azure.com/subscriptions/b9cec7a1-c948-4cd3-a08e-aac87ab0de4a/resourcegroups/botwordpress/providers/Microsoft.Resources/deployments/wordpress?api-version=2015-01-01',
+              url: 'https://management.azure.com/subscriptions/b9cec7a1-c948-4cd3-a08e-aac87ab0de4a/resourcegroups/bot/providers/Microsoft.Resources/deployments/wordpress?api-version=2015-01-01',
               method: 'PUT',
               headers: {
                   'Content-Type': 'application/json',
