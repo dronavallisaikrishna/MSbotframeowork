@@ -1,0 +1,24 @@
+{
+  "name": "msbotframework",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dronavallisaikrishna/MSbotframeowork.git"
+  },
+  "author": "saikrishna",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dronavallisaikrishna/MSbotframeowork/issues"
+  },
+  "homepage": "https://github.com/dronavallisaikrishna/MSbotframeowork#readme",
+  "dependencies": {
+    "botbuilder": "^3.7.0",
+    "request": "^2.81.0",
+    "restify": "^4.3.0"
+  }
+}
