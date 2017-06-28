@@ -2,6 +2,7 @@ var restify = require('restify');
 var builder = require('botbuilder');
 var querystring = require('querystring');
 var request=require('request');
+var fuzzy = require('fuzzy');
 
 // Get secrets from server environment
 var botConnectorOptions = { 
@@ -14,8 +15,20 @@ var connector = new builder.ChatConnector(botConnectorOptions);
 var bot = new builder.UniversalBot(connector);
 
 bot.dialog('/', function (session) {
-
-    var form={
+    //console.log("message is:-"+session.message.text);
+    var list = ['deploy a wordpreess app', 'deploy wordpress','wordpress deploy','deploy word press app','deploy word press','word press deploy',
+    'deploy the app','deploy the application'];
+    var results = fuzzy.filter(session.message.text, list)
+    var matches = results.map(function(el) {
+        //console.log("match is:-"+el.string)
+        return el.string;
+    });
+    console.log("matches are:-"+matches);
+    if(matches.length==0){
+        session.send("Sorry i didnot understand it. Please try asking 'deploy wordpress app','wordpress deploy' etc..");
+    }
+    else{
+        var form={
         client_id:"c94ce145-d0dd-49f7-bd94-b04af30b4303",
         grant_type:"client_credentials",
         client_secret:"xEl06f0hSTU17S7j56nWnnQahZ0dYyZL0BlGu1xbUyo=",
@@ -68,6 +81,61 @@ bot.dialog('/', function (session) {
                   //session.send("response is:-"+obj.access_token);
               }
           });
+    }
+
+    /*var form={
+        client_id:"c94ce145-d0dd-49f7-bd94-b04af30b4303",
+        grant_type:"client_credentials",
+        client_secret:"xEl06f0hSTU17S7j56nWnnQahZ0dYyZL0BlGu1xbUyo=",
+        resource:"https://management.azure.com/"
+    }
+    var formData = querystring.stringify(form);
+    var contentLength = formData.length;
+          var query = {"flight-uxoptin":"true","stsservicecookie":"ests", "x-ms-gateway-slice":"productionb","stsservicecookie":"ests"}
+          request({
+              url: 'https://login.microsoftonline.com/652feb91-6d92-4f6c-ad98-d2daec6bdae7/oauth2/token',
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                  'Cookie':JSON.stringify(query),
+                  'Content-Length': contentLength,
+              },
+              //body: '{\"title\": \"' + data + '\"}' //Set the body as a string
+              body: formData //Set the body as a string
+
+          }, function(error, response, body){
+              if(error) {
+                  console.log("response is error and is:-"+error);
+                  //resp.send("response is error and is:-"+error);
+                  session.send("error is generating api key:-"+error);
+              }
+              else {
+                  console.log("response is:-"+body)
+                  var obj=JSON.parse(body);
+                  var query = {"properties": {"templateLink": {"uri": "https://irastorageaccount.blob.core.windows.net/templates/template.json","contentVersion": "1.0.0.0"},"mode":"Incremental"}}
+                  request({
+                      url: 'https://management.azure.com/subscriptions/b9cec7a1-c948-4cd3-a08e-aac87ab0de4a/resourcegroups/botwordpress/providers/Microsoft.Resources/deployments/wordpress?api-version=2015-01-01',
+                      method: 'PUT',
+                      headers: {
+                          'Content-Type': 'application/json',
+                          'Authorization':'Bearer '+ obj.access_token
+                      },
+                      //body: '{\"title\": \"' + data + '\"}' //Set the body as a string
+                      body: JSON.stringify(query) //Set the body as a string
+
+                  }, function(error, response, body){
+                      if(error) {
+                          console.log("response is error and is:-"+error);
+                          session.send("response is error and is:-"+error);
+                      }
+                      else {
+                          console.log("response is:-"+body)
+                          session.send("response is:-"+body);
+                      }
+                  });
+                  //session.send("response is:-"+obj.access_token);
+              }
+          });*/
 
     //respond with user's message
     /*var query = {"properties": {"templateLink": {"uri": "https://irastorageaccount.blob.core.windows.net/templates/template.json","contentVersion": "1.0.0.0"},"mode":"Incremental"}}
