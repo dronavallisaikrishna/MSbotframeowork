@@ -191,3 +191,48 @@ function createAudioCard(session) {
         ]);
 }
 
+
+
+
+bot.dialog('/', function (session) {
+    session.userData.name="saikrishna"
+    // if(session.userData.hasOwnProperty("name")){
+    //     console.log("session has name attribute")
+    // }
+    // console.log(session.userData)
+    var result=classifier.categorize(session.message.text)
+    if(!session.userData.hasOwnProperty("currentflow")){
+        if(result==="flow1"){
+            session.userData.currentflow="flow1"
+
+            session.send();
+        }
+        else if(result==="flow2"){
+            session.userData.currentflow="flow2"
+            session.userData.nextstep="existing user confirmation";
+            session.send("Are you an existing\n customer?");
+        }
+        else{
+            session.send();
+        }
+    }
+    else{
+        if(session.userData.currentflow==="flow1"){
+
+        }
+        else if(session.userData.currentflow==="flow1"){
+            if(session.userData.nextstep==="existing user confirmation"){
+                if(session.message.text.toLowerCase()==="yes"){
+
+                }
+                else if(session.message.text.toLowerCase()==="no"){
+
+                }
+                else {
+                    session.send("Please say 'yes' or 'no'")
+                }
+
+            }
+        }
+    }
+});
