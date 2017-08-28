@@ -142,14 +142,43 @@ bot.dialog("confirm installation",[
        builder.Prompts.text(session,"Shall I confirm the installation?")
    },
    function (session,results,next) {
-       if(results.response.toLowerCase()==="yes" || results.response.toLowerCase()==="yeah" || results.response.toLowerCase()==="ok" || results.response.toLowerCase()==="yeah"){
-            session.send("We have noted your request. Our agent will contact you soon for fibre installation.")
-           session.endDialog();
+       if(results.response.toLowerCase()==="but one of my friends gave a feedback that the speed is not good on your fibre"){
+            session.send("I don’t know who is spreading these false rumours, but I can assure you, based on my Artificial Intelligence, that our speeds are fast enough & up to the mark.")
+           session.beginDialog("confirm installation")
+       }
+       else if(results.response.toLowerCase()==="yes" || results.response.toLowerCase()==="yeah" || results.response.toLowerCase()==="ok" || results.response.toLowerCase()==="yeah"){
+            session.send("The request has been logged. I see that you have a lovely daughter, who is turning 16 next week.")
+            session.beginDialog("birthday request");
        }
        else if(results.response.toLowerCase()==="no"){
             session.send("Hope I was helpful in solving your query. Can I help you with something else?")
            session.endDialog();
        }
+   }
+]);
+
+//birthday request;
+bot.dialog("birthday request",[
+    function (session,results,next) {
+        builder.Prompts.text(session,"May I suggest a Maxim Shared Line connection as a birthday gift for her?")
+    },
+   function (session,results,next) {
+       if(results.response.toLowerCase()==="display me the plans/yes" || results.response.toLowerCase()==="display me the plans" || results.response.toLowerCase()==="yes" ){
+        response="a. 100 Mbps plan details are as follows.\n\n1.Complimentary unlimited iflix access.\n\n2.FREE Maxperts consultation with end-to-end-setup.\n\n" +
+            "3.Unlimited voice calls to all mobile and landlines.\n\n4.FREE DECT phone.\n\n"+
+            "b. 50 Mbps plan details are as follows.\n\n1.Complimentary unlimited iflix access.\n\n2.FREE Maxperts consultation with end-to-end-setup.\n\n" +
+            "3.Unlimited voice calls to all mobile and landlines.\n\n4.FREE DECT phone.\n\n"+
+            "c. 30 Mbps plan details are as follows.\n\n1.Complimentary unlimited iflix access.\n\n2.FREE Maxperts consultation with end-to-end-setup.\n\n" +
+            "3.Unlimited voice calls to all mobile and landlines.\n\n4.FREE DECT phone.\n\n"+
+            "d. 10 Mbps plan details are as follows.\n\n1.Unlimited voice calls to all mobile and landlines.\n\n2.FREE DECT phone.\n\n"
+        session.send(response)
+        session.beginDialog("activate plan")
+       }
+       else if(results.response.toLowerCase()==="no"){
+        session.send("Okay. You can activate fibre when ever you want.")
+        session.beginDialog("activate plan")
+       }
+
    }
 ]);
 
@@ -267,23 +296,27 @@ bot.dialog("choose plan",[
         console.log("lower case string is "+results.response)
         if(results.response.toLowerCase()==="100 mbps plan" || results.response.toLowerCase()==="1" || results.response.toLowerCase()==="100 mbps plan." || results.response.toLowerCase()==="1.100 mbps plan." || results.response.toLowerCase()==="1.100 mbps plan"){
             session.dialogData.plan="100 mbps plan"
-            session.send("I have logged your request for 100 mbps activation. Our agent will get back to you within 72 hours with activation confirmation. Thank you!!")
-            session.endDialog()
+            session.send("I have logged your request for 100 mbps activation.")
+            session.beginDialog("take slot");
+            // session.endDialog()
         }
         else if(results.response.toLowerCase()==="50 mbps plan" || results.response.toLowerCase()==="2" || results.response.toLowerCase()==="50 mbps plan." || results.response.toLowerCase()==="2.50 mbps plan." || results.response.toLowerCase()==="2.50 mbps plan"){
             session.dialogData.plan="50 mbps plan"
-            session.send("I have logged your request for 50 mbps activation. Our agent will get back to you within 72 hours with activation confirmation. Thank you!!")
-            session.endDialog()
+            session.send("I have logged your request for 50 mbps activation.")
+            session.beginDialog("take slot");
+            // session.endDialog()
         }
         else if(results.response.toLowerCase()==="30 mbps plan" || results.response.toLowerCase()==="3" || results.response.toLowerCase()==="30 mbps plan." || results.response.toLowerCase()==="3.30 mbps plan." || results.response.toLowerCase()==="3.30 mbps plan"){
             session.dialogData.plan="30 mbps plan"
-            session.send("I have logged your request for 30 mbps activation. Our agent will get back to you within 72 hours with activation confirmation. Thank you!!")
-            session.endDialog()
+            session.send("I have logged your request for 30 mbps activation.")
+            session.beginDialog("take slot");
+            // session.endDialog()
         }
         else if(results.response.toLowerCase()==="10 mbps plan" || results.response.toLowerCase()==="4" || results.response.toLowerCase()==="10 mbps plan." || results.response.toLowerCase()==="4.10 mbps plan." || results.response.toLowerCase()==="4.10 mbps plan"){
             session.dialogData.plan="10 mbps plan"
-            session.send("I have logged your request for 10 mbps activation. Our agent will get back to you within 72 hours with activation confirmation. Thank you!!")
-            session.endDialog()
+            session.send("I have logged your request for 10 mbps activation.")
+            session.beginDialog("take slot");
+            // session.endDialog()
         }
         else{
             session.send("Please enter a valid plan.")
@@ -292,6 +325,61 @@ bot.dialog("choose plan",[
 
     }
 ]);
+
+//taking the time slot for contacting
+bot.dialog("take slot",[
+    function (session,results,next) {
+      builder.Prompts.text(session, "Can you please suggest slots for scheduling the installation(e.g.: MM/DD/YYYY HH:MM:SS AM/PM)?");
+    },
+    function (session,results,next) {
+        if (results.response.toLowerCase() === "i want the installation to be done this weekend") {
+            session.send("Regret the inconvenience, but we do not provide installation over weekend")
+            session.beginDialog("pass to client");
+
+        }
+        else {
+            // var slot = builder.EntityRecognizer.resolveTime([results.response])
+            var x= Date.parse(results.response)
+            console.log("time slot is " + x)
+            if(isNaN(x)){
+                session.send("Please enter the data and time in MM/DD/YYYY HH:MM:SS AM/PM")
+                session.beginDialog("take slot");
+            }
+            else{
+                session.send("Thanks for giving us the time slot. we will contact you on " + new Date(x));
+                session.endDialog();
+            }
+        }
+    }
+    // },
+    // function (session,results,next) {
+    //     session.send("Sorry sir, this will have to be logged as an exceptional request.")
+    //     session.beginDialog("pass to client")
+    // }
+]);
+
+
+//pass to client
+
+bot.dialog("pass to client",[
+    function (session,results,next) {
+        builder.Prompts.text(session, "Would you like to speak to a customer care executive?");
+    },
+    function (session,results,next) {
+        if(results.response.toLowerCase()==="yes"){
+            session.send("We are handling the call to a client.")
+            session.endDialog();
+        }
+        else if(results.response.toLowerCase()==="no"){
+            session.send("Thanks for chatting with us. I hope i resolved your problem.")
+            session.endDialog();
+        }
+        else{
+            session.send("Please say yes or no");
+            session.beginDialog("pass to client")
+        }
+    }
+])
 
 // Setup Restify Server
 var server = restify.createServer();
