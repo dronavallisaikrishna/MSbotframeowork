@@ -39,7 +39,7 @@ var bot = new builder.UniversalBot(connector);
 
 
 bot.dialog('/',function (session,results,next) {
-    console.log(session.message.text)
+    console.log(session)
     if(session.message.text==="I want to know about the MaxisONE Home 30 Mbps offer"){
         session.beginDialog("30 Mbps offer");
     }
@@ -250,7 +250,7 @@ bot.dialog('10 Mbps offer', [
 
 bot.dialog("activate plan",[
     function (session,results,next) {
-        builder.Prompts.text(session,"Do you want to activate the plan.?")
+        builder.Prompts.text(session,"Do you want to activate a plan.?")
         // session.beginDialog("activate plan")
     },
     function (session, results,next) {
@@ -318,6 +318,11 @@ bot.dialog("choose plan",[
             session.beginDialog("take slot");
             // session.endDialog()
         }
+        else if(results.response.toLowerCase()==="no" || results.response.toLowerCase()==="i dont want to activate a plan" || results.response.toLowerCase()==="cancel" || results.response.toLowerCase()==="stop" || results.response.toLowerCase()==="please dont actiavte plan"|| results.response.toLowerCase()==="no i dont want to actiavate any plans" || results.response.toLowerCase()==="no i dont want to actiavate" || results.response.toLowerCase()==="no i dont want to" || results.response.toLowerCase()==="no i dont want" || results.response.toLowerCase()==="no i dont" ){
+            session.send("Okay. Thanks for chatting with us. How can i help you?")
+            session.endDialog();
+            // session.endDialog()
+        }
         else{
             session.send("Please enter a valid plan.")
             session.beginDialog("choose plan")
@@ -329,7 +334,7 @@ bot.dialog("choose plan",[
 //taking the time slot for contacting
 bot.dialog("take slot",[
     function (session,results,next) {
-      builder.Prompts.text(session, "Can you please suggest slots for scheduling the installation(e.g.: MM/DD/YYYY HH:MM:SS AM/PM)?");
+      builder.Prompts.text(session, "Can you please suggest slot for scheduling the installation(e.g.: MM/DD/YYYY)?");
     },
     function (session,results,next) {
         if (results.response.toLowerCase() === "i want the installation to be done this weekend") {
@@ -342,22 +347,58 @@ bot.dialog("take slot",[
             var x= Date.parse(results.response)
             console.log("time slot is " + x)
             if(isNaN(x)){
-                session.send("Please enter the data and time in MM/DD/YYYY HH:MM:SS AM/PM")
+                session.send("Please enter the data and time in MM/DD/YYYY")
                 session.beginDialog("take slot");
             }
             else{
-                session.send("Thanks for giving us the time slot. we will contact you on " + new Date(x));
-                session.endDialog();
+                var date= new Date(x);
+                var month = date.getUTCMonth() + 1; //months from 1-12
+                var day = date.getDate();
+                var year = date.getUTCFullYear();
+                var olddate = year + "/" + month + "/" + day;
+                session.userData.olddate=olddate;
+                // builder.Prompts.text(session, "Can you please suggest one more slot for scheduling the installation(e.g.: MM/DD/YYYY)?");
+                // session.endDialog();
+                session.beginDialog("one more slot")
             }
         }
     }
-    // },
-    // function (session,results,next) {
-    //     session.send("Sorry sir, this will have to be logged as an exceptional request.")
-    //     session.beginDialog("pass to client")
-    // }
 ]);
 
+//one more time slot for fibre installation
+bot.dialog("one more slot",[
+    function (session,results,next) {
+        builder.Prompts.text(session, "Can you please suggest one more slot for scheduling the installation(e.g.: MM/DD/YYYY)?");
+    },
+    function (session,results,next) {
+        if (results.response.toLowerCase() === "i want the installation to be done this weekend") {
+            session.send("Regret the inconvenience, but we do not provide installation over weekend")
+            session.beginDialog("pass to client");
+
+        }
+        else {
+            // var slot = builder.EntityRecognizer.resolveTime([results.response])
+            var x= Date.parse(results.response)
+            console.log("time slot is " + x)
+            if(isNaN(x)){
+                session.send("Please enter the data and time in MM/DD/YYYY")
+                session.beginDialog("one more slot");
+            }
+            else{
+                var date= new Date(x);
+                var month = date.getUTCMonth() + 1; //months from 1-12
+                var day = date.getDate();
+                var year = date.getUTCFullYear();
+                var newdate = year + "/" + month + "/" + day;
+                session.userData.newdate=newdate;
+                session.send("Thank you. Our agent will contact you on eaither "+session.userData.olddate+" or "+ session.userData.newdate)
+                // builder.Prompts.text(session, "Can you please suggest one more slot for scheduling the installation(e.g.: MM/DD/YYYY)?");
+                session.endDialog();
+                // session.beginDialog("one more slot")
+            }
+        }
+    }
+])
 
 //pass to client
 
